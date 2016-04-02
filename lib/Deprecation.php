@@ -198,7 +198,7 @@ class Deprecation
     {
         $negativeOffset = false;
 
-        if (!is_int($timezoneDirection = substr($tzOffset, 0, 1))) {
+        if (!is_int(substr($tzOffset, 0, 1))) {
             $negativeOffset = (bool) (substr($tzOffset, 0, 1) === '-');
             $tzOffset = substr($tzOffset, 1) / 100;
         }
@@ -210,10 +210,10 @@ class Deprecation
         $tzOffset *= 3600;
         $tzOffset = (int) ($negativeOffset ? '-'.$tzOffset : $tzOffset);
 
-        $timezoneConstant = timezone_name_from_abbr('', $tzOffset, date('I'));
+        $tzConstant = timezone_name_from_abbr('', $tzOffset, date('I'));
 
-        if ($timezoneConstant !== false) {
-            $dateTime->setTimezone(new \DateTimeZone($timezoneConstant));
+        if ($tzConstant !== false) {
+            $dateTime->setTimezone(new \DateTimeZone($tzConstant));
         }
     }
 }
