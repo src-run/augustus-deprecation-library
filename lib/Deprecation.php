@@ -191,8 +191,6 @@ class Deprecation
     /**
      * @param \DateTime $dateTime
      * @param int       $tzOffset
-     *
-     * @return null
      */
     protected static function attemptDateTimeZoneFromString(\DateTime &$dateTime, $tzOffset)
     {
