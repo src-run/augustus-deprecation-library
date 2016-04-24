@@ -9,69 +9,184 @@
  * file that was distributed with this source code.
  */
 
-namespace SR\Deprecation\Tests;
+namespace SR\Tests\Deprecation;
 
+use SR\Deprecation\Actor\Notifier;
 use SR\Deprecation\Deprecation;
+use SR\Deprecation\Model\Date;
+use SR\Deprecation\Model\Notice;
 
 /**
- * Class DeprecationHandlerTest.
+ * Class DeprecationTest.
  */
 class DeprecationTest extends \PHPUnit_Framework_TestCase
 {
-    public function testCreateUsingConstructor()
+    public function testDeprecationsStateDefault()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 \+0400" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 \+0400"\..+}');
-        new Deprecation(__METHOD__, __LINE__, 'A deprecation message.', new \DateTime('2015-10-10 04:00 +0400'), new \DateTime('2016-10-10 04:00 +0400'));
+        $d = new Deprecation();
+        $p = (new \ReflectionObject($d))->getProperty('enabled');
+        $p->setAccessible(true);
+
+        $this->assertNotTrue($p->getValue($d));
     }
 
-    public function testTriggerDeprecationErrorWithDatetime()
+    public function testDeprecationStateCanBeEnabledAndDisabled()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 \+0400" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 \+0400"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', new \DateTime('2015-10-10 04:00 +0400'), new \DateTime('2016-10-10 04:00 +0400'));
+        $d = new Deprecation();
+        $p = (new \ReflectionObject($d))->getProperty('enabled');
+        $p->setAccessible(true);
+
+        Deprecation::enable();
+        $this->assertTrue($p->getValue($d));
+    }
+    
+    public function testDeprecationDefinitionResolvedCallingContext()
+    {
+        $n = new Notifier();
+        Deprecation::enable(null, $n);
+        Deprecation::definition(
+            Notice::create('Deprecation message text', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getCallingContextFromTrace');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertSame([__CLASS__, __FUNCTION__], $string);
     }
 
-    public function testTriggerDeprecationErrorWithStringDates()
+    public function testDeprecationDefinitionResolvedMessage()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 [+-][0-9]{4}" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 [+-][0-9]{4}"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', '2015-10-10 04:00', '2016-10-10 04:00');
+        $n = new Notifier();
+        Deprecation::enable(null, $n);
+        Deprecation::definition(
+            Notice::create('Deprecation message text', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getMessage');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertRegExp('{Deprecation message text:.*}', $string);
+
+        $n = new Notifier();
+        Deprecation::enable(null, $n);
+        Deprecation::definition(
+            Notice::create()
+                ->setMessage('Deprecation message text 2')
+                ->setDate(Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getMessage');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertRegExp('{Deprecation message text 2:.*}', $string);
     }
 
-    public function testTriggerDeprecationErrorWithStringDatesWithTimezone()
+    public function testInvokeWhenDisabled()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 \-0300" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 \+0300"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', '2015-10-10 05:00:00 -0300', '2016-10-10 11:00:00 +0300');
+        $d = new Deprecation();
+        $p = (new \ReflectionObject($d))->getProperty('notifier');
+        $p->setAccessible(true);
+        $p->setValue($d, $n = new Notifier());
+        $p = (new \ReflectionObject($d))->getProperty('enabled');
+        $p->setAccessible(true);
+        $p->setValue($d, false);
+
+        Deprecation::invoke(
+            Notice::create('Deprecation message text', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getMessage');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertRegExp('{Deprecation message text:.*}', $string);
     }
 
-    public function testTriggerDeprecationErrorWithStringDatesWithInvalidTimezone()
+    public function testInvokeWhenEnabled()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 [+-][0-9]{4}" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 [+-][0-9]{4}"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', '2015-10-10 04:00', '2016-10-10 04:00');
+        $this->expectException('\PHPUnit_Framework_Error');
+        $this->expectExceptionMessageRegExp('{Deprecation message text:.*'.__FUNCTION__.'\)}');
+
+        Deprecation::enable();
+        Deprecation::invoke(
+            Notice::create('Deprecation message text', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
     }
 
-    public function testTriggerDeprecationErrorWithStringDatesWithInvalidTimezone2()
+    public function testInvokeWithLogger()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 [+-][0-9]{4}" and will be removed on "Mon, 10 Oct 2016 [0-9]{2}:00:00 [+-][0-9]{4}"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', '2015-10-10 04:00:00 +0000', '2016-10-10 04:00:00 +0000');
+        $this->expectException('\PHPUnit_Framework_Error');
+        $this->expectExceptionMessageRegExp('{Another deprecation message:.*}');
+
+        $logger = $this
+            ->getMockBuilder('\Psr\Log\AbstractLogger')
+            ->setMethods(['debug'])
+            ->getMockForAbstractClass();
+        
+        $logger
+            ->expects($this->once())
+            ->method('debug')
+            ->withAnyParameters();
+
+        Deprecation::enable($logger);
+        Deprecation::invoke(Notice::create('Another deprecation message', Date::create('2020-01-01')));
     }
 
-    public function testTriggerDeprecationErrorWithStringVersions()
+    public function testInvokeNoNativeErrorWithException()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated in version "v2" and will be removed in version "v3"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', 'v2', 'v3');
+        $this->expectException('\SR\Deprecation\Exception\DeprecationException');
+        $this->expectExceptionMessageRegExp('{Exception deprecation message:.*'.__FUNCTION__.'\)}');
+
+        Deprecation::enable();
+        Deprecation::mode(Deprecation::USE_EXCEPTION);
+        Deprecation::invoke(
+            Notice::create('Exception deprecation message', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
     }
 
-    public function testTriggerDeprecationErrorWithStringVersionAndDatetimeMixed()
+    public function testInvokeNoNativeErrorWithNoException()
     {
-        $this->setExpectedExceptionRegExp('\PHPUnit_Framework_Error',
-            '{.+A deprecation message\. This feature was deprecated on "Sat, 10 Oct 2015 [0-9]{2}:00:00 [+-][0-9]{4}" and will be removed in version "v3"\..+}');
-        Deprecation::create(__METHOD__, __LINE__, 'A deprecation message.', new \DateTime('2015-10-10 04:00 +0400'), 'v3');
+        $n = new Notifier();
+        Deprecation::enable(null, $n);
+        Deprecation::mode('invalid_mode_string');
+        Deprecation::invoke(
+            Notice::create('Invalid mode deprecation message', Date::create('2020-01-01'))
+                ->addReference('#1234')
+                ->addReference('#98')
+                ->addReplacement(__METHOD__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getMessage');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertRegExp('{Invalid mode deprecation message:.*}', $string);
     }
 }
 
