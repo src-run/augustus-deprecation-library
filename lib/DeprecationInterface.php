@@ -1,27 +1,30 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rmf
- * Date: 4/24/16
- * Time: 8:46 AM
+
+declare (strict_types = 1);
+
+/*
+ * This file is part of the `src-run/augustus-deprecation-library` project.
+ *
+ * (c) Rob Frawley 2nd <rmf@src.run>
+ *
+ * For the full copyright and license information, please view the LICENSE.md
+ * file that was distributed with this source code.
  */
+
 namespace SR\Deprecation;
 
 use Psr\Log\LoggerInterface;
 use SR\Deprecation\Actor\NotifierInterface;
 use SR\Deprecation\Model\Notice;
 
-
 /**
- * Class Deprecation.
+ * Interface DeprecationInterface.
  */
 interface DeprecationInterface
 {
     /**
      * @param null|LoggerInterface   $logger
      * @param null|NotifierInterface $notifier
-     *
-     * @return null
      */
     public static function enable(LoggerInterface $logger = null, NotifierInterface $notifier = null);
 
@@ -34,15 +37,13 @@ interface DeprecationInterface
 
     /**
      * @param Notice $notice
-     *
-     * @return null
      */
     public static function definition(Notice $notice);
 
     /**
      * @param Notice|null $notice
-     *
-     * @return null
      */
     public static function invoke(Notice $notice = null);
 }
+
+/* EOF */

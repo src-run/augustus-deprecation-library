@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
@@ -82,7 +82,7 @@ class Deprecation implements DeprecationInterface
     public static function definition(Notice $notice)
     {
         $stack = debug_backtrace(
-            DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+            DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 
         static::$notifier
             ->setStack($stack)

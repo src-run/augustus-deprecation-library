@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
@@ -123,7 +123,7 @@ class Notifier implements NotifierInterface
 
         return [
             $result->getDeclaringClass()->getName(),
-            $result->getName()
+            $result->getName(),
         ];
     }
 

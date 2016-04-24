@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
@@ -37,8 +37,6 @@ interface NotifierInterface
 
     /**
      * @param LoggerInterface|null $logger
-     *
-     * @return null
      */
     public function notify(LoggerInterface $logger = null);
 }

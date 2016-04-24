@@ -39,7 +39,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         Deprecation::enable();
         $this->assertTrue($p->getValue($d));
     }
-    
+
     public function testDeprecationDefinitionResolvedCallingContext()
     {
         $n = new Notifier();
@@ -144,7 +144,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
             ->getMockBuilder('\Psr\Log\AbstractLogger')
             ->setMethods(['debug'])
             ->getMockForAbstractClass();
-        
+
         $logger
             ->expects($this->once())
             ->method('debug')
