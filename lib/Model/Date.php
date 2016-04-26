@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
  *
@@ -23,7 +21,7 @@ class Date
      *
      * @return \DateTime
      */
-    public static function create($date) : \DateTime
+    public static function create($date)
     {
         return new \DateTime($date);
     }

@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
  *
@@ -26,14 +24,14 @@ interface NotifierInterface
      *
      * @return NotifierInterface
      */
-    public function setStack(array $trace) : NotifierInterface;
+    public function setStack(array $trace);
 
     /**
      * @param Notice $notice
      *
      * @return NotifierInterface
      */
-    public function setNotice(Notice $notice) : NotifierInterface;
+    public function setNotice(Notice $notice);
 
     /**
      * @param LoggerInterface|null $logger

@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
  *
@@ -36,7 +34,7 @@ class Notifier implements NotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function setStack(array $trace) : NotifierInterface
+    public function setStack(array $trace)
     {
         $this->trace = $trace;
 
@@ -46,7 +44,7 @@ class Notifier implements NotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function setNotice(Notice $notice) : NotifierInterface
+    public function setNotice(Notice $notice)
     {
         $this->notice = $notice;
 
@@ -76,7 +74,7 @@ class Notifier implements NotifierInterface
     /**
      * @return string
      */
-    private function getMessage() : string
+    private function getMessage()
     {
         $notice = $this->notice;
         $callContext = $this->getCallingContextFromTrace();
@@ -105,7 +103,7 @@ class Notifier implements NotifierInterface
     /**
      * @return string[]
      */
-    private function getCallingContextFromTrace() : array
+    private function getCallingContextFromTrace()
     {
         $s = array_filter($this->trace, function ($t) {
             return @$t['object'] instanceof \ReflectionMethod;
@@ -132,7 +130,7 @@ class Notifier implements NotifierInterface
      *
      * @return \ReflectionMethod
      */
-    private function getCallingContextResult(array $set) : \ReflectionMethod
+    private function getCallingContextResult(array $set)
     {
         return array_shift($set);
     }

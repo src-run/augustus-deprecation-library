@@ -17,6 +17,7 @@ sudo     : false
 
 # Build against the following engines: Zend 7.0.x
 php :
+  - 5.6
   - 7.0
 
 # Set a sane clone depth for Git.

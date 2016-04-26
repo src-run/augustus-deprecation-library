@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
  *
@@ -33,7 +31,7 @@ interface DeprecationInterface
      *
      * @return string
      */
-    public static function mode(string $mode = null) : string;
+    public static function mode($mode = null);
 
     /**
      * @param Notice $notice

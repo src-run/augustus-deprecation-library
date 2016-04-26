@@ -1,7 +1,5 @@
 <?php
 
-declare (strict_types = 1);
-
 /*
  * This file is part of the `src-run/augustus-deprecation-library` project.
  *
@@ -42,7 +40,7 @@ class Notice
      * @param string|null    $message
      * @param \DateTime|null $date
      */
-    public function __construct(string $message = null, \DateTime $date = null)
+    public function __construct($message = null, \DateTime $date = null)
     {
         $this->message = $message;
         $this->date = $date;
@@ -54,7 +52,7 @@ class Notice
      *
      * @return Notice
      */
-    public static function create(string $message = null, \DateTime $date = null) : Notice
+    public static function create($message = null, \DateTime $date = null)
     {
         return new static($message, $date);
     }
@@ -62,7 +60,7 @@ class Notice
     /**
      * @return bool
      */
-    public function hasReferences() : bool
+    public function hasReferences()
     {
         return count($this->references) > 0;
     }
@@ -70,7 +68,7 @@ class Notice
     /**
      * @return string[]
      */
-    public function getReferences() : array
+    public function getReferences()
     {
         return $this->references;
     }
@@ -80,7 +78,7 @@ class Notice
      *
      * @return Notice
      */
-    public function addReference(string $associatedIssue) : Notice
+    public function addReference($associatedIssue)
     {
         $this->references[] = $associatedIssue;
 
@@ -90,7 +88,7 @@ class Notice
     /**
      * @return bool
      */
-    public function hasReplacements() : bool
+    public function hasReplacements()
     {
         return count($this->replacements) > 0;
     }
@@ -98,7 +96,7 @@ class Notice
     /**
      * @return string[]
      */
-    public function getReplacements() : array
+    public function getReplacements()
     {
         return $this->replacements;
     }
@@ -108,7 +106,7 @@ class Notice
      *
      * @return Notice
      */
-    public function addReplacement(string $replacement) : Notice
+    public function addReplacement($replacement)
     {
         $this->replacements[] = $replacement;
 
@@ -118,7 +116,7 @@ class Notice
     /**
      * @return string
      */
-    public function getMessage() : string
+    public function getMessage()
     {
         return $this->message;
     }
@@ -128,7 +126,7 @@ class Notice
      *
      * @return Notice
      */
-    public function setMessage(string $message) : Notice
+    public function setMessage($message)
     {
         $this->message = $message;
 
@@ -138,7 +136,7 @@ class Notice
     /**
      * @return bool
      */
-    public function hasDate() : bool
+    public function hasDate()
     {
         return $this->date instanceof \DateTime;
     }
@@ -156,7 +154,7 @@ class Notice
      *
      * @return Notice
      */
-    public function setDate(\DateTime $date) : Notice
+    public function setDate(\DateTime $date)
     {
         $this->date = $date;
 
