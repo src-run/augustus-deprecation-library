@@ -127,7 +127,7 @@ class Notifier implements NotifierInterface
     protected function getBacktraceExternallyInvokedMethodFirst()
     {
         $methodCollection = $this->getBacktraceExternallyInvokedMethods();
-        
+
         return array_shift($methodCollection);
     }
 
