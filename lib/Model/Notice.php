@@ -74,6 +74,18 @@ class Notice
     }
 
     /**
+     * @param mixed[] $references
+     *
+     * @return $this
+     */
+    public function setReferences(...$references)
+    {
+        $this->references = $references;
+
+        return $this;
+    }
+
+    /**
      * @param string $associatedIssue
      *
      * @return Notice
@@ -99,6 +111,18 @@ class Notice
     public function getReplacements()
     {
         return $this->replacements;
+    }
+
+    /**
+     * @param mixed[] $replacements
+     *
+     * @return $this
+     */
+    public function setReplacements(...$replacements)
+    {
+        $this->replacements = $replacements;
+
+        return $this;
     }
 
     /**
@@ -131,14 +155,6 @@ class Notice
         $this->message = $message;
 
         return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasDate()
-    {
-        return $this->date instanceof \DateTime;
     }
 
     /**

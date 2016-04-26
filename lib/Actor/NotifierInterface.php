@@ -20,11 +20,11 @@ use SR\Deprecation\Model\Notice;
 interface NotifierInterface
 {
     /**
-     * @param array $trace
+     * @param array $backtrace
      *
      * @return NotifierInterface
      */
-    public function setStack(array $trace);
+    public function setBacktrace(array $backtrace);
 
     /**
      * @param Notice $notice

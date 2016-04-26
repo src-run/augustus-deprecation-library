@@ -40,7 +40,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($p->getValue($d));
     }
 
-    public function testDeprecationDefinitionResolvedCallingContext()
+    public function testDeprecationBacktraceFirstExternalInvokedMethod()
     {
         $n = new Notifier();
         Deprecation::enable(null, $n);
@@ -51,12 +51,13 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
                 ->addReplacement(__METHOD__)
         );
 
-        $m = (new \ReflectionObject($n))->getMethod('getCallingContextFromTrace');
+        $m = (new \ReflectionObject($n))->getMethod('getBacktraceExternallyInvokedMethodFirst');
         $m->setAccessible(true);
 
-        $string = $m->invoke($n);
+        $method = $m->invoke($n);
 
-        $this->assertSame([__CLASS__, __FUNCTION__], $string);
+        $this->assertSame(__CLASS__, $method->getDeclaringClass()->getName());
+        $this->assertSame(__FUNCTION__, $method->getName());
     }
 
     public function testDeprecationDefinitionResolvedMessage()
@@ -65,9 +66,6 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         Deprecation::enable(null, $n);
         Deprecation::definition(
             Notice::create('Deprecation message text', Date::create('2020-01-01'))
-                ->addReference('#1234')
-                ->addReference('#98')
-                ->addReplacement(__METHOD__)
         );
 
         $m = (new \ReflectionObject($n))->getMethod('getMessage');
@@ -94,6 +92,33 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $string = $m->invoke($n);
 
         $this->assertRegExp('{Deprecation message text 2:.*}', $string);
+        $this->assertRegExp('{#1234}', $string);
+        $this->assertRegExp('{#98}', $string);
+        $this->assertRegExp('{2020}', $string);
+        $this->assertRegExp('{'.preg_quote(__METHOD__).'}', $string);
+
+        $n = new Notifier();
+        Deprecation::enable(null, $n);
+        Deprecation::definition(
+            Notice::create()
+                ->setMessage('Deprecation message text 2')
+                ->setDate(Date::create('2020-01-01'))
+                ->setReferences('#1234', '#98')
+                ->setReplacements(__METHOD__, __FUNCTION__, __CLASS__)
+        );
+
+        $m = (new \ReflectionObject($n))->getMethod('getMessage');
+        $m->setAccessible(true);
+
+        $string = $m->invoke($n);
+
+        $this->assertRegExp('{Deprecation message text 2:.*}', $string);
+        $this->assertRegExp('{#1234}', $string);
+        $this->assertRegExp('{#98}', $string);
+        $this->assertRegExp('{2020}', $string);
+        $this->assertRegExp('{'.preg_quote(__METHOD__).'}', $string);
+        $this->assertRegExp('{'.preg_quote(__FUNCTION__).'}', $string);
+        $this->assertRegExp('{'.preg_quote(__CLASS__).'}', $string);
     }
 
     public function testInvokeWhenDisabled()

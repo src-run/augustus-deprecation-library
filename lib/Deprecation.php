@@ -83,7 +83,7 @@ class Deprecation implements DeprecationInterface
             DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 
         static::$notifier
-            ->setStack($stack)
+            ->setBacktrace($stack)
             ->setNotice($notice);
     }
 

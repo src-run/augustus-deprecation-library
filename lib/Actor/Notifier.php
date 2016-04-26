@@ -24,7 +24,7 @@ class Notifier implements NotifierInterface
     /**
      * @var mixed[]
      */
-    private $trace;
+    private $backtrace;
 
     /**
      * @var Notice
@@ -34,9 +34,9 @@ class Notifier implements NotifierInterface
     /**
      * {@inheritdoc}
      */
-    public function setStack(array $trace)
+    public function setBacktrace(array $backtrace)
     {
-        $this->trace = $trace;
+        $this->backtrace = $backtrace;
 
         return $this;
     }
@@ -76,63 +76,76 @@ class Notifier implements NotifierInterface
      */
     private function getMessage()
     {
-        $notice = $this->notice;
-        $callContext = $this->getCallingContextFromTrace();
+        $method = $this->getBacktraceExternallyInvokedMethodFirst();
 
-        $date = $notice->hasDate() ? sprintf(' on "%s"', $notice->getDate()->format('Y\-m\-d')) : '';
+        $message = sprintf(
+            '%s: "%s::%s" deprecated on %s',
+            $this->notice->getMessage(),
+            $method->getDeclaringClass()->getName(),
+            $method->getName(),
+            ($date = $this->notice->getDate()) ? $date->format('r') : 'unspecified date');
 
-        $msg = sprintf(
-            '%s: "%s::%s" deprecated%s', $notice->getMessage(), $callContext[0], $callContext[1], $date);
-
-        $msgReplacements = '';
-        $msgReferences = '';
-
-        if ($notice->hasReplacements()) {
-            $msgReplacements = sprintf(
-                '(replacements %s)', implode(', ', $notice->getReplacements()));
-        }
-
-        if ($notice->hasReferences()) {
-            $msgReferences = sprintf(
-                '(reference %s)', implode(', ', $notice->getReferences()));
-        }
-
-        return sprintf('%s %s %s', $msg, $msgReferences, $msgReplacements);
+        return sprintf(
+            '%s %s %s',
+            $message,
+            $this->getMessageReferences(),
+            $this->getMessageReplacements());
     }
 
     /**
-     * @return string[]
+     * @return string
      */
-    private function getCallingContextFromTrace()
+    private function getMessageReplacements()
     {
-        $s = array_filter($this->trace, function ($t) {
-            return @$t['object'] instanceof \ReflectionMethod;
-        });
+        $template = '(replacements: %s)';
 
-        $s = array_map(function ($t) { return $t['object']; }, $s);
+        if (!$this->notice->hasReplacements()) {
+            return sprintf($template, 'none');
+        }
 
-        $s = array_filter($s, function (\ReflectionMethod $o) {
-            $name = $o->getDeclaringClass()->getName();
-
-            return false === strpos($name, 'SR\Deprecation');
-        });
-
-        $result = $this->getCallingContextResult(array_values($s));
-
-        return [
-            $result->getDeclaringClass()->getName(),
-            $result->getName(),
-        ];
+        return sprintf($template,
+            implode(', ', $this->notice->getReplacements()));
     }
 
     /**
-     * @param \ReflectionMethod[] $set
-     *
+     * @return string
+     */
+    private function getMessageReferences()
+    {
+        $template = '(references: %s)';
+
+        if (!$this->notice->hasReferences()) {
+            return sprintf($template, 'none');
+        }
+
+        return sprintf($template, implode(', ', $this->notice->getReferences()));
+    }
+
+    /**
      * @return \ReflectionMethod
      */
-    private function getCallingContextResult(array $set)
+    protected function getBacktraceExternallyInvokedMethodFirst()
     {
-        return array_shift($set);
+        $methodCollection = $this->getBacktraceExternallyInvokedMethods();
+        
+        return array_shift($methodCollection);
+    }
+
+    /**
+     * @return \ReflectionMethod[]|
+     */
+    private function getBacktraceExternallyInvokedMethods()
+    {
+        $methods = [];
+        foreach ($this->backtrace as $step) {
+            if (isset($step['object']) && $step['object'] instanceof \ReflectionMethod) {
+                $methods[] = $step['object'];
+            }
+        }
+
+        return array_filter($methods, function (\ReflectionMethod $m) {
+            return false === strpos($m->getDeclaringClass()->getName(), 'SR\Deprecation');
+        });
     }
 }
 
