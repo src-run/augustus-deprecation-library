@@ -185,7 +185,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->expectExceptionMessageRegExp('{Exception deprecation message:.*'.__FUNCTION__.'\)}');
 
         Deprecation::enable();
-        Deprecation::mode(Deprecation::USE_EXCEPTION);
+        Deprecation::mode(Deprecation::USE_THROWN_EXCEPTION);
         Deprecation::invoke(
             Notice::create('Exception deprecation message', Date::create('2020-01-01'))
                 ->addReference('#1234')

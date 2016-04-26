@@ -21,12 +21,12 @@ class Deprecation implements DeprecationInterface
     /**
      * @var string
      */
-    const USE_DEPRICATION_ERROR = 'deprecation_error';
+    const USE_DEPRICATION_ERROR = 'use_deprecation_error';
 
     /**
      * @var string
      */
-    const USE_EXCEPTION = 'throw_exception';
+    const USE_THROWN_EXCEPTION = 'use_thrown_exception';
 
     /**
      * @var bool
