@@ -19,7 +19,6 @@ git:
 
 env :
   global :
-    - build_package=true
     - secure : OtJIJkQuAT0gWjcNRorrSnyvxGmIpB3fkxYi2OL9eTTCcUCmIc5l6pnAlEkRfYgzrKUMc3BBv9AEppEdWm6nBoFER8MYvpSqhUoW/LhHKlxmNc733iXjBUe02+2VsaztgofvcDe56+YndL38cO00HLmKpQPLoepWAQ3f8+kBHrvb4LwEhsbmLDg31KMUzRyS1Fw6tfjKofHZfJSQQov1OCoNVnIPL7JwUWYqn133dKU+XZfa8acLN2TyX/rheQHz1YE7lQ+76rBisjz5N54oY3RcC/dnJ7VC3hHFR5nFWYre0eijmUr/5N5+gl7JW8UDRpKMo2+7H2dNEJ0tuAZCbtKoMcjvHLEkv/bE4hNd+1hXaL7WsL82yLz9+4ZlkRnIhh0/iT9PkEsDtZjsgA+7lw4i8nlndysb8zkqJwS0C47hg3ocmUIiohn25qMEfODOxSnkosjRGvsBwrBBV7QgSXN2IbDTJxGvgj+L29fala2z2Szrb/Ed+axGUZgGFxw8hdY33ozaTxK1FF6lcwXM+GwEji6JifgeroXQVUKtNjUOMhao5LS8XIaZFZfuhBGhLmmhsMoxQsU/TGExWb/yUQCR1+wj9Xf6yZcCbGV+Jxl6MmLpCcmpo4FqBkq7SvxVCvuSEs83bG0LqK+noJBNTYd5cuAywbHuQ6HEV+7llWU=
 
 install :
