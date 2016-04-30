@@ -3,4 +3,4 @@
 	url = https://github.com/src-run/usr-src-runner.git
 [submodule ".bldr"]
 	path = .bldr
-	url = https://github.com/robfrawley/usr-src-builder.git
+	url = https://github.com/src-run/usr-src-builder.git
