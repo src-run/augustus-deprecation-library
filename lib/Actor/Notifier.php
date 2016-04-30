@@ -62,7 +62,7 @@ class Notifier implements NotifierInterface
             $logger->debug($this->getMessage());
         }
 
-        if (Deprecation::mode() === Deprecation::USE_DEPRICATION_ERROR) {
+        if (Deprecation::mode() === Deprecation::USE_DEPRECATION_ERROR) {
             trigger_error($this->getMessage(), E_USER_DEPRECATED);
         }
 

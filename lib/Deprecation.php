@@ -21,7 +21,7 @@ class Deprecation implements DeprecationInterface
     /**
      * @var string
      */
-    const USE_DEPRICATION_ERROR = 'use_deprecation_error';
+    const USE_DEPRECATION_ERROR = 'use_deprecation_error';
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class Deprecation implements DeprecationInterface
     /**
      * @var string
      */
-    private static $mode = self::USE_DEPRICATION_ERROR;
+    private static $mode = self::USE_DEPRECATION_ERROR;
 
     /**
      * @var null|LoggerInterface
