@@ -27,7 +27,7 @@ interface DeprecationInterface
     public static function enable(LoggerInterface $logger = null, NotifierInterface $notifier = null);
 
     /**
-     * @param string|null $mode
+     * @param null|string $mode
      *
      * @return string
      */
@@ -39,7 +39,7 @@ interface DeprecationInterface
     public static function definition(Notice $notice);
 
     /**
-     * @param Notice|null $notice
+     * @param null|Notice $notice
      */
     public static function invoke(Notice $notice = null);
 }

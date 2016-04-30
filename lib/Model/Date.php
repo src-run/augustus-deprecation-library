@@ -21,7 +21,7 @@ class Date
      *
      * @return \DateTime
      */
-    public static function create($date)
+    public static function create($date = 'now')
     {
         return new \DateTime($date);
     }

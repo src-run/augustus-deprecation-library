@@ -20,7 +20,7 @@ use SR\Deprecation\Model\Notice;
 interface NotifierInterface
 {
     /**
-     * @param array $backtrace
+     * @param mixed[] $backtrace
      *
      * @return NotifierInterface
      */
@@ -34,7 +34,7 @@ interface NotifierInterface
     public function setNotice(Notice $notice);
 
     /**
-     * @param LoggerInterface|null $logger
+     * @param null|LoggerInterface $logger
      */
     public function notify(LoggerInterface $logger = null);
 }
