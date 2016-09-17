@@ -12,9 +12,9 @@
 namespace SR\Deprecation;
 
 use Psr\Log\LoggerInterface;
-use SR\Deprecation\Model\Notice;
 use SR\Deprecation\Actor\Notifier;
 use SR\Deprecation\Actor\NotifierInterface;
+use SR\Deprecation\Model\Notice;
 
 class Deprecation implements DeprecationInterface
 {

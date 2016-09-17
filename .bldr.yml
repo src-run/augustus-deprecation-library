@@ -7,7 +7,7 @@ env_make   : ~
 env_prep   : get-composer
 env_post   : ci-coveralls,ci-codacy
 php_conf   : timezone
-php_exts   : ~
+php_exts   : igbinary
 app_prep   : dep-composer
 app_post   : ~
 app_path   : ~
