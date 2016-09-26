@@ -3,7 +3,7 @@
   "license": "MIT",
   "type": "library",
   "homepage": "https://src.run/augustus-deprecation-library",
-  "description": "This library contains basic deprecation handler functionality.",
+  "description": "Simple library providing a basic deprecation handler implementation.",
   "support": {
     "email": "rmf@src.run",
     "issues": "https://src.run/augustus-deprecation-library/issues",
@@ -19,8 +19,8 @@
     }
   ],
   "require": {
-    "php": "~5.6 || ~7.0",
-    "src-run/augustus-exception-library": "~0.6"
+    "php": "~7.0",
+    "src-run/augustus-exception-library": "~0.7"
   },
   "require-dev": {
     "codacy/coverage": "~1.0",
@@ -47,7 +47,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.6-dev"
+      "dev-master": "0.7-dev"
     }
   }
 }

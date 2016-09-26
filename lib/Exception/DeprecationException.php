@@ -19,5 +19,3 @@ use SR\Exception\Exception;
 class DeprecationException extends Exception
 {
 }
-
-/* EOF */

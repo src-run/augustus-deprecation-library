@@ -1,17 +1,16 @@
 
 # [src-run] augustus-deprecation-library
 
-|       Travis-CI        |      Codacy Rating      |      Code Coverage      |        Style-CI         |
-|:----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
-| [![Travis](https://src.run/augustus-deprecation-library/travis.svg)](https://src.run/augustus-deprecation-library/travis) | [![Codacy](https://src.run/augustus-deprecation-library/codacy.svg)](https://src.run/augustus-deprecation-library/codacy) | [![Coveralls](https://src.run/augustus-deprecation-library/coveralls.svg)](https://src.run/augustus-deprecation-library/coveralls) | [![Coveralls](https://src.run/augustus-deprecation-library/styleci.svg)](https://src.run/augustus-deprecation-library/styleci) |
+|       Travis-CI        |      Codacy Rating      |      Code Coverage      |        Style-CI         |         Release         |    API Documentation    |
+|:----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
+| [![Travis](https://src.run/augustus-deprecation-library/travis.svg)](https://src.run/augustus-deprecation-library/travis) | [![Codacy](https://src.run/augustus-deprecation-library/codacy.svg)](https://src.run/augustus-deprecation-library/codacy) | [![Coveralls](https://src.run/augustus-deprecation-library/coveralls.svg)](https://src.run/augustus-deprecation-library/coveralls) | [![Coveralls](https://src.run/augustus-deprecation-library/styleci.svg)](https://src.run/augustus-deprecation-library/styleci) | [![Packagist](https://src.run/augustus-deprecation-library/packagist.svg)](https://src.run/augustus-deprecation-library/packagist) | [![API Docs](https://src.run/augustus-deprecation-library/api.svg)](https://src.run/augustus-deprecation-library/api) | 
 
 
 ## Overview
 
-[Welcome](https://src.run/go/readme_welcome)!
-The `src-run/augustus-deprecation-library` package provides the following
+[Welcome](https://src.run/go/readme_welcome)! This package provides
 
-> basic deprecation handler functionality
+> Simple library providing a basic deprecation handler implementation.
 
 ### Grouping
 
@@ -116,5 +115,4 @@ information.
 | __Stable Release__ | [![Packagist](https://src.run/augustus-deprecation-library/packagist.svg)](https://src.run/augustus-deprecation-library/packagist)     |
 | __Dev Release__    | [![Packagist](https://src.run/augustus-deprecation-library/packagist_pre.svg)](https://src.run/augustus-deprecation-library/packagist) |
 | __License__        | [![License](https://src.run/augustus-deprecation-library/license.svg)](https://src.run/augustus-deprecation-library/license)           |
-| __Reference__      | [![License](https://src.run/augustus-deprecation-library/api.svg)](https://src.run/augustus-deprecation-library/api)                   |
 

@@ -38,5 +38,3 @@ interface NotifierInterface
      */
     public function notify(LoggerInterface $logger = null);
 }
-
-/* EOF */

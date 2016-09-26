@@ -177,5 +177,3 @@ class Notice
         return $this;
     }
 }
-
-/* EOF */

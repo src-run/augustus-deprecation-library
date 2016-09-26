@@ -16,7 +16,10 @@ use SR\Deprecation\Actor\Notifier;
 use SR\Deprecation\Actor\NotifierInterface;
 use SR\Deprecation\Model\Notice;
 
-class Deprecation implements DeprecationInterface
+/**
+ * Main class used to define a deprecation.
+ */
+class Deprecate implements DeprecationInterface
 {
     /**
      * @var string
@@ -39,7 +42,7 @@ class Deprecation implements DeprecationInterface
     private static $mode = self::USE_DEPRECATION_ERROR;
 
     /**
-     * @var null|LoggerInterface
+     * @var LoggerInterface
      */
     private static $logger;
 
@@ -75,12 +78,11 @@ class Deprecation implements DeprecationInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param Notice $notice
      */
-    public static function definition(Notice $notice)
+    public static function define(Notice $notice)
     {
-        $stack = debug_backtrace(
-            DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        $stack = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 
         static::$notifier
             ->setBacktrace($stack)
@@ -93,7 +95,7 @@ class Deprecation implements DeprecationInterface
     public static function invoke(Notice $notice = null)
     {
         if ($notice !== null) {
-            static::definition($notice);
+            static::define($notice);
         }
 
         if (static::$enabled) {
@@ -101,5 +103,3 @@ class Deprecation implements DeprecationInterface
         }
     }
 }
-
-/* EOF */

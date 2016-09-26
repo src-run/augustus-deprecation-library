@@ -26,5 +26,3 @@ class Date
         return new \DateTime($date);
     }
 }
-
-/* EOF */

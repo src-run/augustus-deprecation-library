@@ -17,8 +17,8 @@ disabled:
   - simplified_null_return
 
 finder :
-  name    : [ "*.php", "*.twig" ]
-  exclude : [ "vendor", "var" ]
-  path    : [ "lib", "test" ]
+  name    : [ '*.php' ]
+  exclude : [ 'vendor', 'var' ]
+  path    : [ '.' ]
 
 ...

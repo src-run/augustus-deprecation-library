@@ -12,7 +12,7 @@
 namespace SR\Tests\Deprecation;
 
 use SR\Deprecation\Actor\Notifier;
-use SR\Deprecation\Deprecation;
+use SR\Deprecation\Deprecate;
 use SR\Deprecation\Model\Date;
 use SR\Deprecation\Model\Notice;
 
@@ -23,7 +23,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
 {
     public function testDeprecationsStateDefault()
     {
-        $d = new Deprecation();
+        $d = new Deprecate();
         $p = (new \ReflectionObject($d))->getProperty('enabled');
         $p->setAccessible(true);
 
@@ -32,19 +32,19 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
 
     public function testDeprecationStateCanBeEnabledAndDisabled()
     {
-        $d = new Deprecation();
+        $d = new Deprecate();
         $p = (new \ReflectionObject($d))->getProperty('enabled');
         $p->setAccessible(true);
 
-        Deprecation::enable();
+        Deprecate::enable();
         $this->assertTrue($p->getValue($d));
     }
 
     public function testDeprecationBacktraceFirstExternalInvokedMethod()
     {
         $n = new Notifier();
-        Deprecation::enable(null, $n);
-        Deprecation::definition(
+        Deprecate::enable(null, $n);
+        Deprecate::define(
             Notice::create('Deprecation message text', Date::create('2020-01-01'))
                 ->addReference('#1234')
                 ->addReference('#98')
@@ -63,8 +63,8 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
     public function testDeprecationDefinitionResolvedMessage()
     {
         $n = new Notifier();
-        Deprecation::enable(null, $n);
-        Deprecation::definition(
+        Deprecate::enable(null, $n);
+        Deprecate::define(
             Notice::create('Deprecation message text', Date::create('2020-01-01'))
         );
 
@@ -76,8 +76,8 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('{Deprecation message text:.*}', $string);
 
         $n = new Notifier();
-        Deprecation::enable(null, $n);
-        Deprecation::definition(
+        Deprecate::enable(null, $n);
+        Deprecate::define(
             Notice::create()
                 ->setMessage('Deprecation message text 2')
                 ->setDate(Date::create('2020-01-01'))
@@ -98,8 +98,8 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('{'.preg_quote(__METHOD__).'}', $string);
 
         $n = new Notifier();
-        Deprecation::enable(null, $n);
-        Deprecation::definition(
+        Deprecate::enable(null, $n);
+        Deprecate::define(
             Notice::create()
                 ->setMessage('Deprecation message text 2')
                 ->setDate(Date::create('2020-01-01'))
@@ -123,7 +123,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
 
     public function testInvokeWhenDisabled()
     {
-        $d = new Deprecation();
+        $d = new Deprecate();
         $p = (new \ReflectionObject($d))->getProperty('notifier');
         $p->setAccessible(true);
         $p->setValue($d, $n = new Notifier());
@@ -131,7 +131,7 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $p->setAccessible(true);
         $p->setValue($d, false);
 
-        Deprecation::invoke(
+        Deprecate::invoke(
             Notice::create('Deprecation message text', Date::create('2020-01-01'))
                 ->addReference('#1234')
                 ->addReference('#98')
@@ -151,8 +151,8 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->expectException('\PHPUnit_Framework_Error');
         $this->expectExceptionMessageRegExp('{Deprecation message text:.*'.__FUNCTION__.'\)}');
 
-        Deprecation::enable();
-        Deprecation::invoke(
+        Deprecate::enable();
+        Deprecate::invoke(
             Notice::create('Deprecation message text', Date::create('2020-01-01'))
                 ->addReference('#1234')
                 ->addReference('#98')
@@ -175,8 +175,8 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
             ->method('debug')
             ->withAnyParameters();
 
-        Deprecation::enable($logger);
-        Deprecation::invoke(Notice::create('Another deprecation message', Date::create('2020-01-01')));
+        Deprecate::enable($logger);
+        Deprecate::invoke(Notice::create('Another deprecation message', Date::create('2020-01-01')));
     }
 
     public function testInvokeNoNativeErrorWithException()
@@ -184,9 +184,9 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->expectException('\SR\Deprecation\Exception\DeprecationException');
         $this->expectExceptionMessageRegExp('{Exception deprecation message:.*'.__FUNCTION__.'\)}');
 
-        Deprecation::enable();
-        Deprecation::mode(Deprecation::USE_THROWN_EXCEPTION);
-        Deprecation::invoke(
+        Deprecate::enable();
+        Deprecate::mode(Deprecate::USE_THROWN_EXCEPTION);
+        Deprecate::invoke(
             Notice::create('Exception deprecation message', Date::create('2020-01-01'))
                 ->addReference('#1234')
                 ->addReference('#98')
@@ -197,9 +197,9 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
     public function testInvokeNoNativeErrorWithNoException()
     {
         $n = new Notifier();
-        Deprecation::enable(null, $n);
-        Deprecation::mode('invalid_mode_string');
-        Deprecation::invoke(
+        Deprecate::enable(null, $n);
+        Deprecate::mode('invalid_mode_string');
+        Deprecate::invoke(
             Notice::create('Invalid mode deprecation message', Date::create('2020-01-01'))
                 ->addReference('#1234')
                 ->addReference('#98')
@@ -214,5 +214,3 @@ class DeprecationTest extends \PHPUnit_Framework_TestCase
         $this->assertRegExp('{Invalid mode deprecation message:.*}', $string);
     }
 }
-
-/* EOF */

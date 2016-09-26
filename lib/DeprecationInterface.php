@@ -36,12 +36,10 @@ interface DeprecationInterface
     /**
      * @param Notice $notice
      */
-    public static function definition(Notice $notice);
+    public static function define(Notice $notice);
 
     /**
      * @param null|Notice $notice
      */
     public static function invoke(Notice $notice = null);
 }
-
-/* EOF */

@@ -12,7 +12,7 @@
 namespace SR\Deprecation\Actor;
 
 use Psr\Log\LoggerInterface;
-use SR\Deprecation\Deprecation;
+use SR\Deprecation\Deprecate;
 use SR\Deprecation\Exception\DeprecationException;
 use SR\Deprecation\Model\Notice;
 
@@ -62,11 +62,11 @@ class Notifier implements NotifierInterface
             $logger->debug($this->getMessage());
         }
 
-        if (Deprecation::mode() === Deprecation::USE_DEPRECATION_ERROR) {
+        if (Deprecate::mode() === Deprecate::USE_DEPRECATION_ERROR) {
             trigger_error($this->getMessage(), E_USER_DEPRECATED);
         }
 
-        if (Deprecation::mode() === Deprecation::USE_THROWN_EXCEPTION) {
+        if (Deprecate::mode() === Deprecate::USE_THROWN_EXCEPTION) {
             throw DeprecationException::create($this->getMessage());
         }
     }
@@ -148,5 +148,3 @@ class Notifier implements NotifierInterface
         });
     }
 }
-
-/* EOF */

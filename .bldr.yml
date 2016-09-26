@@ -12,5 +12,5 @@ app_prep   : dep-composer
 app_post   : ~
 app_path   : ~
 pkg_name   : augustus-deprecation-library
-pkg_desc   : "basic deprecation handler functionality"
+pkg_desc   : "simple library providing a basic deprecation handler implementation"
 pkg_bndl   : false
