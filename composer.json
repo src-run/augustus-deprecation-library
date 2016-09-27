@@ -20,7 +20,9 @@
   ],
   "require": {
     "php": "~7.0",
-    "src-run/augustus-exception-library": "~0.7"
+    "src-run/augustus-exception-library": "~0.7",
+    "src-run/augustus-log-library": "~0.7",
+    "src-run/augustus-utility-library": "~0.7"
   },
   "require-dev": {
     "codacy/coverage": "~1.0",
@@ -36,7 +38,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "SR\\Tests\\Deprecation\\": "tests/"
+      "SR\\Deprecation\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "dev",
