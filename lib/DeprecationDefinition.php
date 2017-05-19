@@ -12,7 +12,11 @@
 namespace SR\Deprecation;
 
 use Psr\Log\LoggerInterface;
-use SR\Deprecation\Model\Version;
+use SR\Deprecation\Constraint\ConstraintInterface;
+use SR\Deprecation\Constraint\DateConstraint;
+use SR\Deprecation\Constraint\NullConstraint;
+use SR\Deprecation\Constraint\StateConstraint;
+use SR\Deprecation\Constraint\VersionConstraint;
 use SR\Log\LoggerAwareTrait;
 use SR\Util\Context\FileContext;
 
@@ -31,43 +35,28 @@ class DeprecationDefinition implements DeprecationDefinitionInterface
     private $description;
 
     /**
-     * @var \DateTime
-     */
-    private $createdOnDate;
-
-    /**
-     * @var Version
-     */
-    private $createdAtVersion;
-
-    /**
-     * @var \DateTime
-     */
-    private $removalOnDate;
-
-    /**
-     * @var Version
-     */
-    private $removalAtVersion;
-
-    /**
      * @var string[]
      */
     private $references;
 
     /**
-     * @param null|LoggerInterface $logger
-     * @param bool                 $inferCallingContext
+     * @var ConstraintInterface
      */
-    public function __construct(LoggerInterface $logger = null, bool $inferCallingContext = true)
-    {
-        if ($logger) {
-            $this->setLogger($logger);
-        }
+    private $deprecationConstraint;
 
-        if ($inferCallingContext) {
-            $this->inferCallingContextFromTrace(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 10));
-        }
+    /**
+     * @var ConstraintInterface
+     */
+    private $removalConstraint;
+
+    /**
+     * @param string|\DateTime|ConstraintInterface|null
+     * @param null|LoggerInterface $logger
+     */
+    public function __construct($deprecationConstraint = null, LoggerInterface $logger = null)
+    {
+        $this->deprecationConstraint($deprecationConstraint);
+        $this->setLogger($logger);
     }
 
     /**
@@ -79,77 +68,38 @@ class DeprecationDefinition implements DeprecationDefinitionInterface
     }
 
     /**
-     * @param null|LoggerInterface $logger
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public static function create(LoggerInterface $logger = null) : DeprecationDefinitionInterface
-    {
-        return new static($logger);
-    }
-
-    /**
      * @param string $description
+     * @param mixed  ...$replacements
      *
      * @return DeprecationDefinitionInterface
      */
-    public function deprecate(string $description) : DeprecationDefinitionInterface
+    public function describe(string $description, ...$replacements): DeprecationDefinitionInterface
     {
-        $this->description = $description;
+        $this->description = 0 === count($replacements) ? $description : vsprintf($description, $replacements);
 
         return $this;
     }
 
     /**
-     * @param string $date
-     * @param string $format
+     * @param string|\DateTime|ConstraintInterface $constraint
      *
      * @return DeprecationDefinitionInterface
      */
-    public function createdOn(string $date, string $format = 'Y-m-d H:i O') : DeprecationDefinitionInterface
+    public function deprecationConstraint($constraint): DeprecationDefinitionInterface
     {
-        $this->createdOnDate = \DateTime::createFromFormat($format, $date);
+        $this->deprecationConstraint = $this->getConstraintInstance($constraint);
 
         return $this;
     }
 
     /**
-     * @param int|null $major
-     * @param int|null $minor
-     * @param int|null $patch
+     * @param string|\DateTime|ConstraintInterface $constraint
      *
      * @return DeprecationDefinitionInterface
      */
-    public function createdAt(int $major = null, int $minor = null, $patch = null) : DeprecationDefinitionInterface
+    public function removalConstraint($constraint): DeprecationDefinitionInterface
     {
-        $this->createdAtVersion = new Version($major, $minor, $patch);
-
-        return $this;
-    }
-
-    /**
-     * @param string $date
-     * @param string $format
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public function removalOn(string $date, string $format = 'Y-m-d H:i O') : DeprecationDefinitionInterface
-    {
-        $this->removalOnDate = \DateTime::createFromFormat($format, $date);
-
-        return $this;
-    }
-
-    /**
-     * @param int|null $major
-     * @param int|null $minor
-     * @param int|null $patch
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public function removalAt(int $major = null, int $minor = null, $patch = null) : DeprecationDefinitionInterface
-    {
-        $this->removalAtVersion = new Version($major, $minor, $patch);
+        $this->removalConstraint = $this->getConstraintInstance($constraint);
 
         return $this;
     }
@@ -159,7 +109,7 @@ class DeprecationDefinition implements DeprecationDefinitionInterface
      *
      * @return DeprecationDefinitionInterface
      */
-    public function reference(...$references) : DeprecationDefinitionInterface
+    public function reference(...$references): DeprecationDefinitionInterface
     {
         $this->references = $references;
 
@@ -168,62 +118,102 @@ class DeprecationDefinition implements DeprecationDefinitionInterface
 
     /**
      * @param int $level
+     *
+     * @return DeprecationDefinitionInterface
      */
-    public function trigger($level = E_USER_DEPRECATED)
+    public function trigger($level = E_USER_DEPRECATED): DeprecationDefinitionInterface
     {
-        $message = $this->compileMessage();
-
-        $this->logDebug($message);
+        $this->logDebug($message = $this->compileMessage());
         @trigger_error($message, $level);
+
+        return $this;
     }
 
     /**
-     * @param array $trace
+     * @return FileContext
      */
-    private function inferCallingContextFromTrace(array $trace = [])
+    private function getContext(): FileContext
     {
-        $trace = array_filter($trace, function (array $t) {
+        if (!$this->context) {
+            $this->setupContext();
+        }
+
+        return $this->context;
+    }
+
+    /**
+     * @return self
+     */
+    private function setupContext(): self
+    {
+        $trace = array_filter(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 10), function (array $t) {
             return isset($t['file']) && $t['file'] !== __FILE__;
         });
 
         $context = array_shift($trace);
 
         $this->context = new FileContext($context['file'], $context['line']);
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    private function compileMessage()
+    private function compileMessage(): string
     {
-        return vsprintf('NOTICE: %s [created%s] [removal%s] (%s from "%s:%d")', [
-            $this->description,
-            $this->getDateVersionString($this->createdOnDate, $this->createdAtVersion) ?: 'null',
-            $this->getDateVersionString($this->removalOnDate, $this->removalAtVersion) ?: 'null',
-            $this->context->getMethodName(true),
-            $this->context->getFilePathname(),
-            $this->context->getLine(),
+        $message = '';
+
+        if ($this->deprecationConstraint) {
+            $message = ucfirst($this->deprecationConstraint->getConstrainStringRepresentation()) . ' ';
+        }
+
+        $message .= lcfirst($this->description);
+
+        if ($this->removalConstraint) {
+            $message .= sprintf(', and will be removed %s', $this->removalConstraint->getConstrainStringRepresentation());
+        }
+
+        if ($this->references) {
+            $message .= sprintf('. Use "%s" instead', implode(':', $this->references));
+        }
+
+        $message .= vsprintf('. [Originated from "%s" in "%s" on line "%d"]', [
+            $this->getContext()->getMethodName(true),
+            $this->getContext()->getFilePathname(),
+            $this->getContext()->getLine(),
         ]);
+
+        return trim($message);
     }
 
     /**
-     * @param \DateTime|null $date
-     * @param Version|null   $version
+     * @param string|\DateTime|ConstraintInterface $constraint
      *
-     * @return string
+     * @return ConstraintInterface
      */
-    private function getDateVersionString(\DateTime $date = null, Version $version = null)
+    private function getConstraintInstance($constraint): ConstraintInterface
     {
-        $return = '';
-
-        if ($date) {
-            $return .= ':'.$date->format('Y.m.d');
+        if (null === $constraint) {
+            return new NullConstraint();
         }
 
-        if ($version) {
-            $return .= ':'.$version->getVersion();
+        if ($constraint instanceof ConstraintInterface) {
+            return $constraint;
         }
 
-        return empty($return) ? null : $return;
+        if ($constraint instanceof \DateTime) {
+            return new DateConstraint($constraint);
+        }
+
+        if (1 === preg_match('{^(?<y>[0-9]{4})-(?<m>[0-9]{2})-(?<d>[0-9]{2})$}', $constraint)) {
+            return new DateConstraint(new \DateTime($constraint));
+        }
+
+        if (1 === preg_match('{^(?<major>[0-9]{1,})(.(?<minor>[0-9]{1,}))?(.(?<patch>[0-9]{1,}))?$}', $constraint, $matches)) {
+            return new VersionConstraint($matches['major'], $matches['minor'] ?? null, $matches['patch'] ?? null);
+        }
+
+        return new StateConstraint($constraint);
     }
 }

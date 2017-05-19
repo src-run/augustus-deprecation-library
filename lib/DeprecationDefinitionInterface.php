@@ -12,6 +12,7 @@
 namespace SR\Deprecation;
 
 use Psr\Log\LoggerInterface;
+use SR\Deprecation\Constraint\ConstraintInterface;
 use SR\Log\LoggerAwareInterface;
 
 interface DeprecationDefinitionInterface extends LoggerAwareInterface
@@ -19,64 +20,41 @@ interface DeprecationDefinitionInterface extends LoggerAwareInterface
     /**
      * @return string
      */
-    public function __toString() : string;
-
-    /**
-     * @param null|LoggerInterface $logger
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public static function create(LoggerInterface $logger = null) : DeprecationDefinitionInterface;
+    public function __toString(): string;
 
     /**
      * @param string $description
+     * @param mixed  ...$replacements
      *
      * @return DeprecationDefinitionInterface
      */
-    public function deprecate(string $description) : DeprecationDefinitionInterface;
+    public function describe(string $description, ...$replacements): DeprecationDefinitionInterface;
 
     /**
-     * @param \DateTime $date
+     * @param string|\DateTime|ConstraintInterface $constraint
      *
      * @return DeprecationDefinitionInterface
      */
-    public function createdOn(string $date, string $format = 'Y-m-d H:i O') : DeprecationDefinitionInterface;
+    public function deprecationConstraint($constraint): DeprecationDefinitionInterface;
 
     /**
-     * @param int|null $major
-     * @param int|null $minor
-     * @param int|null $patch
+     * @param string|\DateTime|ConstraintInterface $constraint
      *
      * @return DeprecationDefinitionInterface
      */
-    public function createdAt(int $major = null, int $minor = null, $patch = null) : DeprecationDefinitionInterface;
-
-    /**
-     * @param string $date
-     * @param string $format
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public function removalOn(string $date, string $format = 'Y-m-d H:i O') : DeprecationDefinitionInterface;
-
-    /**
-     * @param int|null $major
-     * @param int|null $minor
-     * @param int|null $patch
-     *
-     * @return DeprecationDefinitionInterface
-     */
-    public function removalAt(int $major = null, int $minor = null, $patch = null) : DeprecationDefinitionInterface;
+    public function removalConstraint($constraint): DeprecationDefinitionInterface;
 
     /**
      * @param mixed ...$references
      *
      * @return DeprecationDefinitionInterface
      */
-    public function reference(...$references) : DeprecationDefinitionInterface;
+    public function reference(...$references): DeprecationDefinitionInterface;
 
     /**
      * @param int $level
+     *
+     * @return DeprecationDefinitionInterface
      */
-    public function trigger($level = E_USER_DEPRECATED);
+    public function trigger($level = E_USER_DEPRECATED): DeprecationDefinitionInterface;
 }
